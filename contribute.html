@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<!-- Created By CodingNepal -->
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="utf-8" />
+      <title>Login and Registration Form in HTML | CodingNepal</title>
+      <link rel="stylesheet" href="contribute.css" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   </head>
+   <body>
+      <nav class="nav nav_top">
+         <div class="logo">
+            <img src="1.png" width="150" />
+         </div>
+         <div class="nav_side">
+            <a href="index.html">Home</a>
+            <a href="contribute.html">Contribute</a>
+            <a href="library.html">Library</a>
+            <a href="login.html">Join</a>
+         </div>
+      </nav>
+
+      <div class="wrapper">
+         <div class="title-text">
+            <div class="title login">Contribute</div>
+         </div>
+         <div class="form-container">
+            <div class="form-inner">
+               <form id="contributeForm" method="post" enctype="multipart/form-data" class="login">
+                  <div class="field">
+                     <input type="text" placeholder="Email Address" required name="email" id="logEmail" />
+                  </div>
+                  <div class="field">
+                     <input type="password" placeholder="Password" required name="password" id="logPass"/>
+                  </div>
+                  <div class="field">
+                     <input type="file" placeholder="upload your images" name="uploadfile" id="logFile"/>
+                  </div>
+                  <div class="pass-link"> Don't have account <a href="./login.html">Create account</a></div>
+                  <div class="field btn">
+                     <div class="btn-layer"></div>
+                     <input type="submit" value="submit" name="submit" />
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script>
+         $(document).ready(function (e) {
+            $("#contributeForm").on("submit", function (e) {
+               e.preventDefault();
+
+               var loginResult = login()
+               if(loginResult == -1){
+                  alert("Please select your file");
+               }else if(loginResult == 0){
+                  alert("No account was found");
+               }else{
+                  $.ajax({
+                     url: "./handlers/upload.php",
+                     type: "POST",
+                     data: new FormData(this),
+                     contentType: false,
+                     cache: false,
+                     processData: false,
+                     success: function (data) {
+                        alert(data)
+                        $("#contributeForm")[0].reset(); 
+                     },
+                     error: function (e) {
+                        console.log(e)
+                     },
+                  });
+               }
+            });
+         });
+
+         function login() {
+            var user = document.getElementById("logEmail").value;
+            var pass = document.getElementById("logPass").value;
+            var file = document.getElementById("logFile").value;
+
+            if(file == ""){
+               return -1;
+            }
+            const loginData = {
+               user: user,
+               pass: pass
+            };
+
+            $.ajax({
+               type: "post",
+               url: "./handlers/login.php",
+               data: loginData,
+               success: function (responce) {
+                  if (responce) {
+                     return responce;
+                  } else {
+                     return 0;
+                  }
+               },
+               error: function (jqXHR, textStatus, errorThrown) {
+                  return 0;
+               },
+            });
+         }
+      </script>
+   </body>
+</html>
